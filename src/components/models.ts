@@ -1,8 +1,12 @@
-export interface Todo {
-  id: number;
-  content: string;
+export interface IAnimal {
+
 }
 
-export interface Meta {
-  totalCount: number;
+export interface IBolus {
+
+}
+
+export interface IFarm {
+  id: number;
+  name: string;
 }

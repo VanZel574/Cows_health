@@ -3,8 +3,36 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    component: () => import('layouts/Dashboard.vue'),
+    children: [
+      { path: '', component: () => import('pages/dashboard/IndexPage.vue') },
+      { path: 'animals', component: () => import('pages/dashboard/AnimalsPage.vue') },
+      { path: 'groups', component: () => import('pages/dashboard/GroupsPage.vue') },
+      { path: 'messages', component: () => import('pages/dashboard/MessagesPage.vue') },
+      { path: 'boluses', component: () => import('pages/dashboard/BolusesPage.vue') }
+    ],
+  },
+
+  {
+    path: '/auth',
+    component: () => import('layouts/Default.vue'),
+    children: [
+      { path: 'login', component: () => import('pages/auth/LoginPage.vue'), props: {routerLink: '/'} },
+      { path: 'register', component: () => import('pages/auth/RegisterPage.vue') },
+    ]
+  },
+
+  {
+    path: '/admin',
+    component: () => import('layouts/Default.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/auth/LoginPage.vue'),
+        props: {routerLink: '/admin/organisations', admin: true}
+      },
+      { path: 'organisations', component: () => import('pages/admin/IndexPage.vue') },
+    ]
   },
 
   // Always leave this as last one,

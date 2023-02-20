@@ -98,14 +98,22 @@
 
         </q-tabs>
       </div>
-
     </div>
-
   </q-header>
+
+  <modal :open-dialog="dialog" :title="dialogTitle" @dialog-close="dialog = false">
+    <component :is="dialogComponent" :component-props="dialogComponentProps"></component>
+  </modal>
+
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import Modal from "components/Modal.vue";
+import NewFarm from "components/layout/NewFarm.vue";
+import NewAnimal from "components/layout/NewAnimal.vue";
+import NewGroup from "components/layout/NewGroup.vue";
+import NewBolus from "components/layout/NewBolus.vue";
+import { ref, shallowRef, resolveComponent } from "vue";
 import { IFarm } from "components/models";
 
 
@@ -114,6 +122,21 @@ const initFarmModel = ref<IFarm | null>(null)
 const loadingLogout = ref(false)
 
 const farmChange = () => {}
+
+// dialog
+const dialog = ref(false)
+const dialogTitle = ref('')
+const dialogComponent = shallowRef(null)
+const dialogComponentProps = ref(null)
+
+const showDialog = ({title, component, props}) => {
+  dialogTitle.value = title
+  dialog.value = true
+  dialogComponent.value = component
+
+
+}
+
 
 </script>
 

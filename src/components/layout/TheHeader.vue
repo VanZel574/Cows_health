@@ -63,7 +63,13 @@
           option-label="name"
         >
           <template v-slot:append>
-            <q-btn round dense flat icon="add" />
+            <q-btn
+              round
+              dense
+              flat
+              icon="add"
+              @click="showDialog({title: 'Новая ферма', component: newComponents['NewFarm']})"
+            />
           </template>
         </q-select>
       </div>
@@ -81,19 +87,37 @@
           <!--        Животные-->
           <q-btn-group outline>
             <q-route-tab to="/animals" label="животные"></q-route-tab>
-            <q-btn class="primary" round color="primary" icon="add"  />
+            <q-btn
+              class="primary"
+              round
+              color="primary"
+              icon="add"
+              @click="showDialog({title: 'Новое животное', component: newComponents['NewAnimal']})"
+            />
           </q-btn-group>
 
           <!--        Группы-->
           <q-btn-group outline>
             <q-route-tab to="/groups" label="группы" />
-            <q-btn class="primary" round color="primary" icon="add"  />
+            <q-btn
+              class="primary"
+              round
+              color="primary"
+              icon="add"
+              @click="showDialog({title: 'Новая группа', component: newComponents['NewGroup']})"
+            />
           </q-btn-group>
 
           <!--        Болюсы-->
           <q-btn-group outline>
             <q-route-tab to="/boluses" label="болюсы" />
-            <q-btn class="primary" round color="primary" icon="add"  />
+            <q-btn
+              class="primary"
+              round
+              color="primary"
+              icon="add"
+              @click="showDialog({title: 'Новый болюс', component: newComponents['NewBolus']})"
+            />
           </q-btn-group>
 
         </q-tabs>
@@ -102,7 +126,7 @@
   </q-header>
 
   <modal :open-dialog="dialog" :title="dialogTitle" @dialog-close="dialog = false">
-    <component :is="dialogComponent" :component-props="dialogComponentProps"></component>
+    <component :is="dialogComponent"></component>
   </modal>
 
 </template>
@@ -113,9 +137,13 @@ import NewFarm from "components/layout/NewFarm.vue";
 import NewAnimal from "components/layout/NewAnimal.vue";
 import NewGroup from "components/layout/NewGroup.vue";
 import NewBolus from "components/layout/NewBolus.vue";
-import { ref, shallowRef, resolveComponent } from "vue";
+import { ref, shallowRef } from "vue";
 import { IFarm } from "components/models";
 
+
+const newComponents = {
+  NewFarm, NewAnimal, NewBolus, NewGroup
+}
 
 const farmList = ref<IFarm[]>([])
 const initFarmModel = ref<IFarm | null>(null)
@@ -126,15 +154,13 @@ const farmChange = () => {}
 // dialog
 const dialog = ref(false)
 const dialogTitle = ref('')
-const dialogComponent = shallowRef(null)
-const dialogComponentProps = ref(null)
+const dialogComponent = shallowRef()
+// const dialogComponentProps = ref(null)
 
-const showDialog = ({title, component, props}) => {
+const showDialog = ({title, component }: {title: string, component: object}) => {
   dialogTitle.value = title
   dialog.value = true
   dialogComponent.value = component
-
-
 }
 
 

@@ -138,7 +138,7 @@ import NewAnimal from "components/layout/NewAnimal.vue";
 import NewGroup from "components/layout/NewGroup.vue";
 import NewBolus from "components/layout/NewBolus.vue";
 import { ref, shallowRef } from "vue";
-import { IFarm } from "components/models";
+import { IFarm } from "src/utils/models";
 
 
 const newComponents = {

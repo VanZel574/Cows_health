@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { UseApi } from "boot/api";
-import {  FetchMethod, IFarm, IFarmStore } from "src/utils/models";
+import { FetchMethod, IFarm, IFarmStore } from "src/utils/models";
 import { LocalStorage } from "quasar";
 
 

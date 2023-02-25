@@ -113,7 +113,7 @@ const actions: ITableAction[] = [
   }
 ]
 
-const deleteAnimal = () => {}
+const deleteAnimal = (animals: IAnimal[]) => {}
 
 
 </script>

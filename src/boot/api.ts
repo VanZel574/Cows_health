@@ -1,6 +1,6 @@
 import ky from 'ky';
 import { Notify } from 'quasar';
-import {FetchMethod, IAnimal, IBolus, IFarm} from "src/utils/models";
+import { FetchMethod, IAnimal, IBolus, IFarm, IUser } from "src/utils/models";
 import { isFarm, isBolus, isAnimal } from "src/utils/guards";
 
 
@@ -13,7 +13,7 @@ interface IFetch {
 }
 
 const kyInstance = ky.create({
-  prefixUrl: '/api',
+  prefixUrl: '/api/',
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
   },
@@ -24,7 +24,7 @@ const kyInstance = ky.create({
         if (response && response.body) {
           Notify.create({
             type: 'negative',
-            message: 'error'
+            message: 'Ошибка!'
           })
         }
 
@@ -51,13 +51,76 @@ export class UseApi {
     }
   }
 
+  /*--------------------------------------------
+  * Auth
+  *-------------------------------------------*/
+  static login = async (user: IUser) => {
+    try {
+      const fetchParams: IFetch = {
+        endpoint: `user/login`,
+        method: FetchMethod.POST,
+        data: user,
+        params: undefined
+      }
+      await this._fetchData(fetchParams)
+    } catch (e) {
+      // TODO Добавить оповещение об ошибке по номеру статуса
+      throw e
+    }
+  }
+  static logout = async () => {
+    try {
+      const fetchParams: IFetch = {
+        endpoint: `user/logout`,
+        method: FetchMethod.POST,
+        data: null,
+        params: undefined
+      }
+      await this._fetchData(fetchParams)
+    } catch (e) {
+      throw e
+    }
+  }
+  static registerUser = async (user: IUser) => {
+    try {
+      const fetchParams: IFetch = {
+        endpoint: `user/register`,
+        method: FetchMethod.POST,
+        data: user,
+        params: undefined
+      }
+      await this._fetchData(fetchParams)
+    } catch (e) {
+      // TODO Добавить оповещение об ошибке по номеру статуса
+      throw e
+    }
+  }
+
+  /*-------------------------------------------
+  * Permission types
+  *------------------------------------------*/
+  static getPermissionTypes = async () => {
+    try {
+      const fetchParams: IFetch = {
+        endpoint: `user/permissions`,
+        method: FetchMethod.POST,
+        data: null,
+        params: undefined
+      }
+      const response = await this._fetchData(fetchParams)
+      return response
+    } catch (e) {
+      throw e
+    }
+  }
+
   /*--------------------------------
   * Farms api
   *-------------------------------*/
   static farms = async (newFarm: IFarm | null, method: FetchMethod): Promise<IFarm[] | undefined> => {
     try {
       const fetchParams: IFetch = {
-        endpoint: `/farm`,
+        endpoint: `farm`,
         method: method,
         data: newFarm,
         params: undefined
@@ -90,13 +153,22 @@ export class UseApi {
   /*--------------------------------
   * Boluses api
   *-------------------------------*/
-  static boluses = async (newBolus: IFarm | null, method: FetchMethod): Promise<IBolus[] | undefined> => {
+  static boluses = async (bolus: IBolus | IBolus[] | null, method: FetchMethod, farm: IFarm): Promise<IBolus[] | undefined> => {
     try {
+      // get boluses id
+      let bolusesId: null | number[] = null
+      if (FetchMethod.DELETE && bolus && Array.isArray(bolus)) {
+        bolusesId = bolus.map(bolusItem => bolusItem.id)
+      }
+
       const fetchParams: IFetch = {
-        endpoint: `/bolus`,
+        endpoint: `bolus`,
         method: method,
-        data: newBolus,
-        params: undefined
+        data: bolus,
+        params: {
+          farmId: farm.id,
+          bolusId: bolusesId
+        }
       }
       const response = await this._fetchData(fetchParams)
 
@@ -126,13 +198,23 @@ export class UseApi {
   /*--------------------------------
   * Animals api
   *-------------------------------*/
-  static animals = async (newAnimal: IFarm | null, method: FetchMethod): Promise<IAnimal[] | undefined> => {
+  static animals = async (animal: IAnimal | IAnimal[] | null, method: FetchMethod, farm: IFarm): Promise<IAnimal[] | undefined> => {
     try {
+
+      // get animals id
+      let animalsId: null | number[] = null
+      if (FetchMethod.DELETE && animal && Array.isArray(animal)) {
+        animalsId = animal.map(animalItem => animalItem.id)
+      }
+
       const fetchParams: IFetch = {
-        endpoint: `/bolus`,
+        endpoint: `bolus`,
         method: method,
-        data: newAnimal,
-        params: undefined
+        data: animal,
+        params: {
+          farmId: farm.id,
+          animalId: animalsId
+        }
       }
       const response = await this._fetchData(fetchParams)
 

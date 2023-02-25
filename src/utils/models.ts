@@ -10,9 +10,24 @@ export interface IFarm {
   name: string;
 }
 
+export interface IUserStore {
+  isAuth: boolean;
+  token: string | null;
+  userId: number | null;
+  role: string | null;
+}
+
 export interface IFarmStore {
   farmList: IFarm[]
   activeFarm: IFarm | null
+}
+
+export interface IAnimalStore {
+  animals: IAnimal[]
+}
+
+export interface IBolusesStore {
+  boluses: IBolus[]
 }
 
 export interface ITableHeader {
@@ -53,4 +68,13 @@ export interface IBolus {
   cowID: number;
   status: string;
   chargeLevel: number
+}
+
+export interface IUser {
+  login: string;
+  password: string;
+  key?: string;
+  email?: string;
+  permission?: string;
+
 }

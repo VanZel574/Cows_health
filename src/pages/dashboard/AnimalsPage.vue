@@ -7,6 +7,7 @@
       :actions="actions"
       :loading="tableLoading"
       @onDelete="deleteAnimal"
+      :flat="false"
     />
   </q-page>
 </template>

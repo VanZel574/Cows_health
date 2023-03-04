@@ -10,6 +10,7 @@
         row-key="name"
         :loading="loading"
         :visible-columns="visibleColumns()"
+        flat="flat"
       >
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
@@ -40,6 +41,7 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue';
 import { ITableAction, ITableHeader } from "src/utils/models";
+import Modal from "components/Modal.vue";
 
 
 interface IProps {
@@ -48,6 +50,7 @@ interface IProps {
   actions: ITableAction[];
   loading: boolean;
   title: string;
+  flat: boolean;
 }
 
 
@@ -56,7 +59,8 @@ const props = withDefaults(defineProps<IProps>(), {
   rows: () => [],
   actions: () => [],
   loading: false,
-  title: 'Заголовок'
+  title: 'Заголовок',
+  flat: false
 })
 const emit = defineEmits(['onDelete'])
 

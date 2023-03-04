@@ -8,6 +8,14 @@ export const enum FetchMethod {
 export interface IFarm {
   id: number;
   name: string;
+  address?: string;
+  added_at?: Date
+}
+
+export interface IBarn {
+  id : number;
+  name: string;
+  added_at?: Date
 }
 
 export interface IUserStore {
@@ -73,8 +81,8 @@ export interface IBolus {
 export interface IUser {
   login: string;
   password: string;
-  key?: string;
   email?: string;
   permission?: string;
-
+  status?: string;
+  added_at?: Date
 }

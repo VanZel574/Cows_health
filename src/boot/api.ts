@@ -1,14 +1,13 @@
 import ky from 'ky';
-import { Notify } from 'quasar';
-import { FetchMethod, IAnimal, IBolus, IFarm, IUser } from "src/utils/models";
-import { isFarm, isBolus, isAnimal } from "src/utils/guards";
-
+import {Notify} from 'quasar';
+import {FetchMethod, IAnimal, IBarn, IBolus, IFarm, IUser} from "src/utils/models";
+import {isAnimal, isBarn, isBolus, isFarm, isUser} from "src/utils/guards";
 
 
 interface IFetch {
   endpoint: string;
   method: FetchMethod;
-  data: Record<string, any> | null;
+  data: Record<string, any> | null | undefined;
   params: Record<string, any> | undefined;
 }
 
@@ -115,15 +114,50 @@ export class UseApi {
   }
 
   /*--------------------------------
+  * Users api
+  *-------------------------------*/
+  static users = async (user: IUser | IUser[] | null, method: FetchMethod): Promise<IUser[] | undefined> => {
+    try {
+      const fetchParams: IFetch = {
+        endpoint: `user`,
+        method: method,
+        data: user ?? undefined,
+        params: undefined
+      }
+
+      if (method === FetchMethod.DELETE) {
+        Notify.create({
+          type: 'warning',
+          message: 'Пользователь удален'
+        })
+      } else {
+        const response = await this._fetchData(fetchParams)
+        isUser(response)
+        return response
+      }
+    } catch (e) {
+      throw e
+    }
+  }
+
+  /*--------------------------------
   * Farms api
   *-------------------------------*/
-  static farms = async (newFarm: IFarm | null, method: FetchMethod): Promise<IFarm[] | undefined> => {
+  static farms = async (farm: IFarm | IFarm[] | null, method: FetchMethod): Promise<IFarm[] | undefined> => {
     try {
+      // get farms id
+      let farmsId: null | number[] = null
+      if (FetchMethod.DELETE && farm && Array.isArray(farm)) {
+        farmsId = farm.map(farmItem => farmItem.id)
+      }
+
       const fetchParams: IFetch = {
         endpoint: `farm`,
         method: method,
-        data: newFarm,
-        params: undefined
+        data: farm ?? undefined,
+        params: {
+          farmsId: farmsId
+        }
       }
       const response = await this._fetchData(fetchParams)
 
@@ -151,6 +185,50 @@ export class UseApi {
   }
 
   /*--------------------------------
+  * Barns api
+  *-------------------------------*/
+  static barns = async (barn: IBarn | IBarn[] | null, method: FetchMethod, farm: IFarm | null): Promise<IBarn[] | undefined> => {
+    try {
+      // get boluses id
+      let barnsId: null | number[] = null
+      if (FetchMethod.DELETE && barn && Array.isArray(barn)) {
+        barnsId = barn.map(barnItem => barnItem.id)
+      }
+
+      const fetchParams: IFetch = {
+        endpoint: `barn`,
+        method: method,
+        data: barn ?? undefined,
+        params: {
+          farmId: farm?.id,
+          barnId: barnsId
+        }
+      }
+      const response = await this._fetchData(fetchParams)
+
+      switch (method) {
+        case FetchMethod.GET:
+          // guard
+          isBarn(response)
+          return response
+        case FetchMethod.POST:
+          Notify.create({
+            type: 'positive',
+            message: 'Коровник добавлен'
+          })
+          break
+        case FetchMethod.DELETE:
+          Notify.create({
+            type: 'warning',
+            message: 'Коровники удалены'
+          })
+          break
+      }
+    } catch (e) {
+      throw e
+    }
+  }
+  /*--------------------------------
   * Boluses api
   *-------------------------------*/
   static boluses = async (bolus: IBolus | IBolus[] | null, method: FetchMethod, farm: IFarm): Promise<IBolus[] | undefined> => {
@@ -164,7 +242,7 @@ export class UseApi {
       const fetchParams: IFetch = {
         endpoint: `bolus`,
         method: method,
-        data: bolus,
+        data: bolus ?? undefined,
         params: {
           farmId: farm.id,
           bolusId: bolusesId
@@ -210,7 +288,7 @@ export class UseApi {
       const fetchParams: IFetch = {
         endpoint: `bolus`,
         method: method,
-        data: animal,
+        data: animal ?? undefined,
         params: {
           farmId: farm.id,
           animalId: animalsId

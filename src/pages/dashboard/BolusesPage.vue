@@ -7,6 +7,7 @@
       :actions="actions"
       :loading="tableLoading"
       @onDelete="deleteBolus"
+      :flat="false"
     />
   </q-page>
 </template>

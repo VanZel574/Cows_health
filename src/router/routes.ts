@@ -29,9 +29,9 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         component: () => import('pages/auth/LoginPage.vue'),
-        props: {routerLink: '/admin/organisations', admin: true}
+        props: {routerLink: '/admin/dashboard', admin: true}
       },
-      { path: 'organisations', component: () => import('pages/admin/IndexPage.vue') },
+      { path: 'dashboard', component: () => import('pages/admin/AdminDashboard.vue') },
     ]
   },
 

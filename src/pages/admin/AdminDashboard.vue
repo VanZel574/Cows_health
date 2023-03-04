@@ -1,0 +1,47 @@
+<template>
+  <q-page padding>
+    <q-card>
+      <q-tabs
+        v-model="tab"
+        dense
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+        inline-label
+      >
+        <q-tab name="users" label="Пользователи" icon="people" />
+        <q-tab name="farms" label="Фермы" icon="foundation" />
+
+      </q-tabs>
+
+      <q-separator />
+
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="users">
+          <Users />
+        </q-tab-panel>
+
+        <q-tab-panel name="farms">
+          <Farms />
+        </q-tab-panel>
+      </q-tab-panels>
+
+    </q-card>
+  </q-page>
+</template>
+
+
+<script setup lang="ts">
+import { ref } from "vue";
+import Users from "components/admin/Users.vue";
+import Farms from "components/admin/Farms.vue";
+
+
+const tab = ref('users')
+
+
+</script>
+
+<style scoped>
+
+</style>

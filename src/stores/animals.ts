@@ -1,7 +1,8 @@
-import { defineStore } from 'pinia';
-import { UseApi } from "boot/api";
-import { useFarm } from './farms'
-import { FetchMethod, IAnimal, IAnimalStore } from "src/utils/models";
+import {defineStore} from 'pinia';
+import {UseApi} from "boot/api";
+import {useFarm} from './farms';
+import {useBarn} from "stores/barns";
+import {FetchMethod, IAnimal, IAnimalStore} from "src/utils/models";
 
 
 export const useAnimals = defineStore('animals', {
@@ -19,9 +20,11 @@ export const useAnimals = defineStore('animals', {
       try {
         const farm = useFarm()
         const {activeFarm} = farm
+        const barn = useBarn()
+        const {activeBarn} = barn
 
-        if (activeFarm) {
-          const response = await UseApi.animals(null, FetchMethod.GET, activeFarm)
+        if (activeFarm && activeBarn) {
+          const response = await UseApi.animals(null, FetchMethod.GET, activeFarm, activeBarn)
           this.animals = response ?? this.animals
         }
       } catch (e) {
@@ -37,10 +40,12 @@ export const useAnimals = defineStore('animals', {
         // farm store
         const farm = useFarm()
         const {activeFarm} = farm
+        const barn = useBarn()
+        const {activeBarn} = barn
 
-        if(activeFarm) {
+        if(activeFarm && activeBarn) {
           // add animal
-          await UseApi.animals(newAnimal, FetchMethod.POST, activeFarm)
+          await UseApi.animals(newAnimal, FetchMethod.POST, activeFarm, activeBarn)
           // load cow list
           await this.loadData()
         }
@@ -69,10 +74,12 @@ export const useAnimals = defineStore('animals', {
         // farm store
         const farm = useFarm()
         const {activeFarm} = farm
+        const barn = useBarn()
+        const {activeBarn} = barn
 
-        if (activeFarm) {
+        if (activeFarm && activeBarn) {
           // delete
-          await UseApi.animals(animal, FetchMethod.DELETE, activeFarm)
+          await UseApi.animals(animal, FetchMethod.DELETE, activeFarm, activeBarn)
           // load cow list
           await this.loadData()
         }

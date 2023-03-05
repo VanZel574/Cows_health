@@ -26,8 +26,13 @@ export interface IUserStore {
 }
 
 export interface IFarmStore {
-  farmList: IFarm[]
-  activeFarm: IFarm | null
+  farmList: IFarm[];
+  activeFarm: IFarm | null;
+}
+
+export interface IBarnStore {
+  barnList: IBarn[];
+  activeBarn: IBarn | null;
 }
 
 export interface IAnimalStore {
@@ -50,7 +55,7 @@ export interface ITableHeader {
 export interface ITableAction {
   icon: string;
   color: string;
-  props: null | Object
+  props?: null | Object
   title: string;
   tooltip: string;
   component: Object
@@ -85,4 +90,8 @@ export interface IUser {
   permission?: string;
   status?: string;
   added_at?: Date
+}
+
+export interface ITag {
+  name: string;
 }

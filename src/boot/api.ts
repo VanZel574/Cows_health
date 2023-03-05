@@ -187,7 +187,7 @@ export class UseApi {
   /*--------------------------------
   * Barns api
   *-------------------------------*/
-  static barns = async (barn: IBarn | IBarn[] | null, method: FetchMethod, farm: IFarm | null): Promise<IBarn[] | undefined> => {
+  static barns = async (barn: IBarn | IBarn[] | null, method: FetchMethod, farm: IFarm): Promise<IBarn[] | undefined> => {
     try {
       // get boluses id
       let barnsId: null | number[] = null
@@ -231,7 +231,7 @@ export class UseApi {
   /*--------------------------------
   * Boluses api
   *-------------------------------*/
-  static boluses = async (bolus: IBolus | IBolus[] | null, method: FetchMethod, farm: IFarm): Promise<IBolus[] | undefined> => {
+  static boluses = async (bolus: IBolus | IBolus[] | null, method: FetchMethod, farm: IFarm, barn: IBarn): Promise<IBolus[] | undefined> => {
     try {
       // get boluses id
       let bolusesId: null | number[] = null
@@ -245,6 +245,7 @@ export class UseApi {
         data: bolus ?? undefined,
         params: {
           farmId: farm.id,
+          barnId: barn.id,
           bolusId: bolusesId
         }
       }
@@ -276,7 +277,7 @@ export class UseApi {
   /*--------------------------------
   * Animals api
   *-------------------------------*/
-  static animals = async (animal: IAnimal | IAnimal[] | null, method: FetchMethod, farm: IFarm): Promise<IAnimal[] | undefined> => {
+  static animals = async (animal: IAnimal | IAnimal[] | null, method: FetchMethod, farm: IFarm, barn: IBarn): Promise<IAnimal[] | undefined> => {
     try {
 
       // get animals id
@@ -291,6 +292,7 @@ export class UseApi {
         data: animal ?? undefined,
         params: {
           farmId: farm.id,
+          barnId: barn.id,
           animalId: animalsId
         }
       }

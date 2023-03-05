@@ -37,7 +37,7 @@ export const useFarm = defineStore('farm', {
     /*------------------------------------
     * check localstorage farm in farm list
     *-----------------------------------*/
-    checkFarm () {
+    checkActiveFarmInFarmList () {
       const activeFarm: IFarm | null = LocalStorage.getItem('farm')
       if (!activeFarm) return
 

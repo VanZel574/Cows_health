@@ -1,22 +1,60 @@
 <template>
   <q-page>
-    <Table
-      title="Животные"
-      :headers="headers"
-      :rows="animals"
-      :actions="actions"
-      :loading="tableLoading"
-      @onDelete="deleteAnimal"
-      :flat="false"
-    />
+    <div class="q-pa-md">
+      <q-table
+        :columns="headers"
+        :rows="animals"
+        selection="multiple"
+        :selected="animalsSelected"
+      >
+        <template v-slot:bottom>
+          <q-btn
+            class="q-ml-sm"
+            color="negative"
+            :disable="animalsSelected.length < 1"
+            label="Удалить"
+            icon="delete"
+            @click="removeAnimals"
+          />
+        </template>
+        <template v-slot:top>
+          <q-btn
+            class="q-ml-sm"
+            color="secondary"
+            label="Добавить тэг"
+            icon="add"
+            @click="addAnimalTag"
+          />
+        </template>
+
+      </q-table>
+    </div>
   </q-page>
+
+  <modal :open-dialog="dialog" :title="dialogTitle" @dialog-close="dialog = false">
+    <component
+      :is="dialogComponent"
+      :component-props="dialogComponentProps"
+      @dialog-close="dialog = false"
+    />
+  </modal>
 </template>
 
 <script setup lang="ts">
-import Table from "components/Table.vue";
-import { ITableHeader, ITableAction, IAnimal } from "src/utils/models";
-import { ref, resolveComponent } from "vue";
+import Modal from "components/Modal.vue";
+import Tag from "components/animals/Tag.vue";
+import {ITableHeader, IAnimal} from "src/utils/models";
+import {ref, shallowRef, watchEffect} from "vue";
+import {useBarn} from "stores/barns";
+import {useAnimals} from "stores/animals";
 
+
+const dialogComponents = {
+  Tag
+}
+
+const animalsStore = useAnimals()
+const barnStore = useBarn()
 
 const headers: ITableHeader[] = [
   {
@@ -92,30 +130,40 @@ const headers: ITableHeader[] = [
     sortable: true
   },
 ]
-const tableLoading = ref(false)
 const animals = ref<IAnimal[]>([])
+const animalsSelected = ref<IAnimal[]>([])
 
-const actions: ITableAction[] = [
-  {
-    icon: 'fa-regular fa-file',
-    color: 'info',
-    props: null,
-    title: 'Файл разбраковки',
-    tooltip: 'Открыть файл разбраковки',
-    component: resolveComponent('ReportText')
-  },
-  {
-    icon: 'fa-solid fa-chart-simple',
-    color: 'secondary',
-    props: null,
-    title: 'Результаты разбраковки',
-    tooltip: 'Гистограммы',
-    component: resolveComponent('ReportView')
+const removeAnimals = () => {
+  animalsStore.deleteData(animalsSelected.value).catch(e => console.log(e))
+  animalsSelected.value = []
+}
+
+// dialog
+const dialog = ref(false)
+const dialogTitle = ref('')
+const dialogComponent = shallowRef()
+const dialogComponentProps = ref({})
+
+const addAnimalTag = () => {
+  dialogTitle.value = 'Тэги'
+  dialogComponent.value = dialogComponents['Tag']
+  dialogComponentProps.value = {
+    animals: animalsSelected.value
   }
-]
+  dialog.value = true
+}
 
-const deleteAnimal = (animals: IAnimal[]) => {}
+// load boluses on barn change
+watchEffect(() => {
+  if (barnStore.activeBarn) {
+    animalsStore.loadData().catch(e => console.log(e))
+  }
+})
 
+// load boluses if store change
+watchEffect(() => {
+  animals.value = animalsStore.animals
+})
 
 </script>
 

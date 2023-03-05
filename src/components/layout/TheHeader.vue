@@ -4,7 +4,7 @@
     <q-toolbar class="bg-primary text-white">
       <q-toolbar-title>
         <q-avatar>
-          <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+          <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" alt="logo">
         </q-avatar>
         Здоровье коров
       </q-toolbar-title>
@@ -47,10 +47,10 @@
 
     </q-toolbar>
 
-    <!--    Menu-->
+<!--    Menu-->
     <div class="row items-start q-col-gutter-x-sm q-pa-md">
       <div class="col col-auto">
-        <!--      Choose farm-->
+<!--      Фермы-->
         <q-select
           :options="farmList"
           label="Выберите ферму"
@@ -74,17 +74,42 @@
         </q-select>
       </div>
 
+      <div class="col col-auto">
+<!--      Коровники-->
+        <q-select
+          :options="barnList"
+          label="Выберите коровник"
+          v-model="initBarnModel"
+          outlined
+          style="min-width: 250px; max-width: 300px"
+          bg-color="blue-1"
+          @update:model-value="barnChange"
+          option-value="id"
+          option-label="name"
+        >
+          <template v-slot:append>
+            <q-btn
+              round
+              dense
+              flat
+              icon="add"
+              @click="showDialog({title: 'Новый коровник', component: newComponents['NewBarn']})"
+            />
+          </template>
+        </q-select>
+      </div>
+
       <div class="col">
         <q-tabs align="left">
-          <!--        Приборы-->
+<!--        Приборы-->
           <q-route-tab to="/" label="панель приборов" />
 
-          <!--        Сообщения-->
+<!--        Сообщения-->
           <q-route-tab to="/messages" label="сообщения">
             <q-badge color="green" floating>4</q-badge>
           </q-route-tab>
 
-          <!--        Животные-->
+ <!--        Животные-->
           <q-btn-group outline>
             <q-route-tab to="/animals" label="животные"></q-route-tab>
             <q-btn
@@ -96,7 +121,7 @@
             />
           </q-btn-group>
 
-          <!--        Группы-->
+<!--        Группы-->
           <q-btn-group outline>
             <q-route-tab to="/groups" label="группы" />
             <q-btn
@@ -108,7 +133,7 @@
             />
           </q-btn-group>
 
-          <!--        Болюсы-->
+<!--        Болюсы-->
           <q-btn-group outline>
             <q-route-tab to="/boluses" label="болюсы" />
             <q-btn
@@ -137,19 +162,35 @@ import NewFarm from "components/layout/NewFarm.vue";
 import NewAnimal from "components/layout/NewAnimal.vue";
 import NewGroup from "components/layout/NewGroup.vue";
 import NewBolus from "components/layout/NewBolus.vue";
-import { ref, shallowRef } from "vue";
-import { IFarm } from "src/utils/models";
+import NewBarn from "components//layout/NewBarn.vue";
+import {useFarm} from "stores/farms";
+import {useBarn} from "stores/barns";
+import {ref, shallowRef} from "vue";
+import {IFarm, IBarn} from "src/utils/models";
 
 
 const newComponents = {
-  NewFarm, NewAnimal, NewBolus, NewGroup
+  NewFarm, NewAnimal, NewBolus, NewGroup, NewBarn
 }
 
+// Фермы
+const farmStore = useFarm()
 const farmList = ref<IFarm[]>([])
 const initFarmModel = ref<IFarm | null>(null)
+const farmChange = (farm: IFarm) => {
+  farmStore.activeFarm = farm
+}
+
+// Коровники
+const barnStore = useBarn()
+const barnList = ref<IBarn[]>([])
+const initBarnModel = ref<IBarn | null>(null)
+const barnChange = (barn: IBarn) => {
+  barnStore.activeBarn = barn
+}
+
 const loadingLogout = ref(false)
 
-const farmChange = () => {}
 
 // dialog
 const dialog = ref(false)

@@ -1,7 +1,8 @@
 <template>
-  <h2>dashboard page</h2>
+  <Statistic />
+
 </template>
 
 <script setup lang="ts">
-
+import Statistic from "components/boluses/Statistic.vue";
 </script>

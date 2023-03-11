@@ -25,9 +25,15 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {FetchMethod, ITableAction, ITableHeader, IUser} from "src/utils/models";
+import {ITableAction, ITableHeader, IUser} from "src/utils/models";
 import {UseApi} from "boot/api";
+import {isUserList} from "src/utils/guards";
+import {date} from "quasar";
+const {formatDate} = date;
+import {useQuasar} from "quasar";
 
+
+const $q = useQuasar()
 
 const headers: ITableHeader[] = [
   {
@@ -39,9 +45,9 @@ const headers: ITableHeader[] = [
     sortable: true
   },
   {
-    name:'name',
-    field:'name',
-    label: 'Имя',
+    name:'login',
+    field:'login',
+    label: 'Login',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
@@ -80,14 +86,23 @@ const headers: ITableHeader[] = [
   },
 ]
 const users = ref<IUser[]>([])
-const tableTitle = ref('Всего 5 из 10')
+const tableTitle = ref('')
 const actions: ITableAction[] = []
 const selectedUsers = ref<IUser[]>([])
 
 const loadUsers = async () => {
   try {
-    const response = await UseApi.users(null, FetchMethod.GET)
-    users.value = response ?? []
+    const response = await UseApi.get('user/list')
+    isUserList(response)
+
+    users.value = response.users.map(user => {
+      const {added_at, ...rest} = user
+      return {
+        added_at: formatDate(added_at, 'DD-MM-YYYY'),
+        ...rest
+      }
+    })
+    tableTitle.value = `Всего ${response.users.length} из ${response.count.toString()}`
   } catch (e) {
     throw e
   }
@@ -99,7 +114,16 @@ onMounted( () => {
 
 const deleteUsers = async() => {
   try {
-    await UseApi.users(selectedUsers.value, FetchMethod.DELETE)
+    const userIdList: number[] = selectedUsers.value.map(user => user.id)
+    await UseApi.delete('user', {userIdList})
+
+    selectedUsers.value = []
+
+    $q.notify({
+      type: 'positive',
+      message: 'Пользователи успешно удалены'
+    })
+
     await loadUsers()
   } catch (e) {
     console.log(e)

@@ -4,7 +4,7 @@
       <q-table
         :columns="farmsHeaders"
         :rows="farmsRows"
-        title="Всего х ферм из х"
+        :title="farmsCount"
         flat
         selection="multiple"
       >
@@ -59,10 +59,14 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
-import {FetchMethod, IBarn, IFarm, ITableHeader} from "src/utils/models";
+import {IBarn, IFarm, ITableHeader} from "src/utils/models";
 import {UseApi} from "boot/api";
+import {isFarmList, isBarnList} from "src/utils/guards";
+import {date, useQuasar} from "quasar";
+const {formatDate} = date;
 
 
+const $q = useQuasar()
 // фермы
 const farmsHeaders: ITableHeader[] = [
   {
@@ -106,6 +110,7 @@ const farmsHeaders: ITableHeader[] = [
     sortable: true
   },
 ]
+const farmsCount = ref('')
 const farmsRows = ref<IFarm[]>([])
 const farmsSelected = ref<IFarm[]>([])
 const farmsActions = [
@@ -117,28 +122,43 @@ const farmsActions = [
 ]
 const farmChecked = ref<IFarm | null>(null)
 
+
 const loadFarms = async () => {
   try {
-    const farms = await UseApi.farms(null, FetchMethod.GET)
+    const response = await UseApi.get('farm')
+    isFarmList(response)
 
-    if (farms) {
-      farmsRows.value = farms.map(farm => {
-        return {
-          ...farm,
-          action: null
-        }
-      })
-    }
+    // set farms
+    farmsRows.value = response.farms.map(farm => {
+      const {added_at, ...rest} = farm
+
+      return {
+        ...rest,
+        added_at: formatDate(added_at, 'DD-MM-YYYY'),
+        actions: null
+      }
+    })
+
+    // set count
+    farmsCount.value = `Всего ${response.farms.length} из ${response.count.toString()}`
   } catch (e) {
     console.log(e)
   }
 }
 const removeFarms = async () => {
   try {
+    const farmsId: number[] = farmsSelected.value.map(farm => farm.farm_id)
     // delete
-    await UseApi.farms(farmsSelected.value, FetchMethod.DELETE)
+    await UseApi.delete('farm', {farm_id: farmsId})
     // if checked farm in selected reset barns
     verifyCheckedFarmOnRemove()
+
+    // notify
+    $q.notify({
+      type: 'positive',
+      message: 'Фермы успешно удалены'
+    })
+
     farmsSelected.value = []
 
     // load
@@ -164,8 +184,8 @@ const checkFarm = (rowProps: {row: IFarm}) => {
 // коровники
 const barnsHeaders: ITableHeader[] = [
   {
-    name:'id',
-    field:'id',
+    name:'barn_id',
+    field:'barn_id',
     label: 'id',
     align: 'left',
     headerStyle: 'font-weight: 600;',
@@ -194,8 +214,18 @@ const barnSelected = ref<IBarn[]>([])
 const loadBarns = async () => {
   try {
     if (farmChecked.value) {
-      const barns = await UseApi.barns(null, FetchMethod.GET, farmChecked.value)
-      barnsRows.value = barns ?? []
+      const response = await UseApi.get('farm/barn/', {farm_id: farmChecked.value.farm_id})
+      isBarnList(response)
+
+      // set barns
+      barnsRows.value = response[0].barns.barns.map(barn => {
+        const {added_at, ...rest} = barn
+
+        return {
+          ...rest,
+          added_at: formatDate(added_at, 'DD-MM-YYYY')
+        }
+      })
     } else {
       barnsRows.value = []
     }
@@ -206,7 +236,15 @@ const loadBarns = async () => {
 const removeBarns = async () => {
   try {
     // delete
-    await UseApi.barns(barnSelected.value, FetchMethod.DELETE, null)
+    const barnsId: number[] = barnSelected.value.map(barn => barn.barn_id)
+    await UseApi.delete('farm/barn/', {barn_id: barnsId})
+
+    // notify
+    $q.notify({
+      type: 'positive',
+      message: 'Коровники успешно удалены'
+    })
+
     barnSelected.value = []
 
     // load

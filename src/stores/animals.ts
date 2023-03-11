@@ -1,8 +1,9 @@
 import {defineStore} from 'pinia';
 import {UseApi} from "boot/api";
-import {useFarm} from './farms';
+// import {useFarm} from './farms';
 import {useBarn} from "stores/barns";
-import {FetchMethod, IAnimal, IAnimalStore} from "src/utils/models";
+import {IAnimal, IAnimalStore} from "src/utils/models";
+import {isAnimalList} from "src/utils/guards";
 
 
 export const useAnimals = defineStore('animals', {
@@ -18,14 +19,16 @@ export const useAnimals = defineStore('animals', {
     *-------------------------*/
     async loadData() {
       try {
-        const farm = useFarm()
-        const {activeFarm} = farm
+        // const farm = useFarm()
+        // const {activeFarm} = farm
         const barn = useBarn()
         const {activeBarn} = barn
 
-        if (activeFarm && activeBarn) {
-          const response = await UseApi.animals(null, FetchMethod.GET, activeFarm, activeBarn)
-          this.animals = response ?? this.animals
+        if (activeBarn) {
+          const response = await UseApi.get('cow', {barn_id: activeBarn.barn_id})
+          isAnimalList(response)
+
+          this.animals = response[0].cows
         }
       } catch (e) {
         throw e
@@ -38,14 +41,18 @@ export const useAnimals = defineStore('animals', {
     async addData(newAnimal: IAnimal) {
       try {
         // farm store
-        const farm = useFarm()
-        const {activeFarm} = farm
+        // const farm = useFarm()
+        // const {activeFarm} = farm
         const barn = useBarn()
         const {activeBarn} = barn
 
-        if(activeFarm && activeBarn) {
+        if(activeBarn) {
           // add animal
-          await UseApi.animals(newAnimal, FetchMethod.POST, activeFarm, activeBarn)
+          await UseApi.post('cow', {cow_id: newAnimal.cow_id}, {barn_id: activeBarn.barn_id})
+          this.Notify.create({
+            type: 'positive',
+            message: 'Животные успешно добавлены'
+          })
           // load cow list
           await this.loadData()
         }
@@ -69,17 +76,23 @@ export const useAnimals = defineStore('animals', {
     /*-------------------
     * delete animal
     *------------------*/
-    async deleteData(animal: IAnimal[]) {
+    async deleteData(animals: IAnimal[]) {
       try {
         // farm store
-        const farm = useFarm()
-        const {activeFarm} = farm
+        // const farm = useFarm()
+        // const {activeFarm} = farm
         const barn = useBarn()
         const {activeBarn} = barn
 
-        if (activeFarm && activeBarn) {
+        if (activeBarn) {
+          const animalIdList: number[] = animals.map(animal => animal.cow_id)
           // delete
-          await UseApi.animals(animal, FetchMethod.DELETE, activeFarm, activeBarn)
+          await UseApi.delete('cow', {cow_id: animalIdList})
+          // notify
+          this.Notify.create({
+            type: 'positive',
+            message: 'Животные успешно удалены'
+          })
           // load cow list
           await this.loadData()
         }

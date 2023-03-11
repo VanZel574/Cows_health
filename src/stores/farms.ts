@@ -1,14 +1,16 @@
-import { defineStore } from 'pinia';
-import { UseApi } from "boot/api";
-import { FetchMethod, IFarm, IFarmStore } from "src/utils/models";
-import { LocalStorage } from "quasar";
+import {defineStore} from 'pinia';
+import {UseApi} from "boot/api";
+import {IFarm, IFarmStore} from "src/utils/models";
+import {LocalStorage} from "quasar";
+import {isFarmList} from "src/utils/guards";
 
 
 export const useFarm = defineStore('farm', {
   state: (): IFarmStore => {
     return {
       farmList: [],
-      activeFarm: null
+      activeFarm: null,
+      count: 0
     }
   },
   actions: {
@@ -17,10 +19,11 @@ export const useFarm = defineStore('farm', {
     *-----------------*/
     async loadData () {
       try {
-        const response = await UseApi.farms(null, FetchMethod.GET)
-        if (response) {
-          this.farmList = response
-        }
+        const response = await UseApi.get('farm')
+        isFarmList(response)
+
+        this.farmList = response.farms
+        this.count = response.count
       } catch (e) {
         throw e
       }
@@ -41,8 +44,8 @@ export const useFarm = defineStore('farm', {
       const activeFarm: IFarm | null = LocalStorage.getItem('farm')
       if (!activeFarm) return
 
-      const {id} = activeFarm
-      const farmExist = this.farmList.find(item => item.id === id)
+      const {farm_id} = activeFarm
+      const farmExist = this.farmList.find(item => item.farm_id === farm_id)
       if (farmExist) {
         this.activeFarm = activeFarm
       } else {
@@ -57,7 +60,7 @@ export const useFarm = defineStore('farm', {
     async addData (newFarm: IFarm) {
       try {
         // add
-        await UseApi.farms(newFarm, FetchMethod.POST)
+        await UseApi.post('farm', newFarm)
 
         // get farm list
         await this.loadData()

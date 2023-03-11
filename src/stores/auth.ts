@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useFarm } from './farms';
 import { useAnimals } from "./animals";
-import { useBoluses } from "./boluses";
+import { useDevices } from "./devices";
 import { LocalStorage, Cookies } from "quasar";
 import { IUser, IUserStore } from "src/utils/models";
 import { UseApi } from "boot/api";
@@ -61,7 +61,7 @@ export const useAuth = defineStore('auth', {
 
         const farmStore = useFarm()
         const animalStore = useAnimals()
-        const bolusesStore = useBoluses()
+        const bolusesStore = useDevices()
         farmStore.$reset()
         animalStore.$reset()
         bolusesStore.$reset()

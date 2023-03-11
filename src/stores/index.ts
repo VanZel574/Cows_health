@@ -1,6 +1,6 @@
-import { store } from 'quasar/wrappers'
-import { createPinia } from 'pinia'
-
+import {store} from 'quasar/wrappers';
+import {createPinia} from 'pinia';
+import {Notify} from 'quasar';
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -15,6 +15,7 @@ export default store((/* { ssrContext } */) => {
 
   // You can add Pinia plugins here
   // pinia.use(SomePiniaPlugin)
+  pinia.use(() => ({Notify}))
 
   return pinia
 })

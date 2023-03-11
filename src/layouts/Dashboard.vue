@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts">
-import { useAuth } from "stores/auth";
-import { preFetch } from 'quasar/wrappers';
+import {useAuth} from "stores/auth";
+import {preFetch} from 'quasar/wrappers';
 
 
 export default {
@@ -41,6 +41,7 @@ import {storeToRefs} from "pinia";
 const farmStore = useFarm()
 const {activeFarm} = storeToRefs(farmStore)
 const barnStore = useBarn()
+
 
 onMounted(async () => {
   try {

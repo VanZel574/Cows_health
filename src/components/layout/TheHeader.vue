@@ -135,7 +135,7 @@
 
 <!--        Болюсы-->
           <q-btn-group outline>
-            <q-route-tab to="/boluses" label="болюсы" />
+            <q-route-tab to="/devices" label="болюсы" />
             <q-btn
               class="primary"
               round

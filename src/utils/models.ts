@@ -1,21 +1,27 @@
-export const enum FetchMethod {
-  GET = "GET",
-  POST = "POST",
-  PUT = "PUT",
-  DELETE = "DELETE"
+
+export interface IFarmList {
+  farms: IFarm[],
+  count: number;
 }
 
 export interface IFarm {
-  id: number;
+  farm_id: number;
   name: string;
   address?: string;
-  added_at?: Date
+  added_at: Date | string;
 }
 
 export interface IBarn {
-  id : number;
+  barn_id : number;
   name: string;
-  added_at?: Date
+  added_at: Date | string;
+}
+
+export interface IBarnList {
+  farm_id: number;
+  barns: {
+    barns: IBarn[]
+  }
 }
 
 export interface IUserStore {
@@ -28,6 +34,7 @@ export interface IUserStore {
 export interface IFarmStore {
   farmList: IFarm[];
   activeFarm: IFarm | null;
+  count: number;
 }
 
 export interface IBarnStore {
@@ -39,8 +46,8 @@ export interface IAnimalStore {
   animals: IAnimal[]
 }
 
-export interface IBolusesStore {
-  boluses: IBolus[]
+export interface IDevicesStore {
+  devices: IDevice[]
 }
 
 export interface ITableHeader {
@@ -62,36 +69,51 @@ export interface ITableAction {
 }
 
 export interface IAnimal {
-  id: number;
+  cow_id: number;
   name: string;
-  dateOfBorn: Date;
-  lactationDay: number;
-  type: string;
-  bolusID: number;
-  bolusNum: number;
-  calf: string;
+  breed_id: number;
+  breed: string;
+  bolus_id: string | null;
+  bolus_sn: string | null;
+  date_of_born: Date | string;
+  added_at: Date | string;
+  Tags: ITag[];
   actions?: null
 }
 
-export interface IBolus {
-  id: number;
-  number: number;
+export interface IAnimalList {
+  barn_id: number;
+  cows: IAnimal[]
+}
+
+export interface IDevice {
+  device_id: number;
+  sn: string;
   type: string;
-  cowName: string;
-  cowID: number;
-  status: string;
-  chargeLevel: number
+  info: string;
+  added_at: Date | string;
+  cow_id: number;
+  cow_name: string;
+  charge: number;
+  actions?: null
 }
 
 export interface IUser {
+  id: number;
   login: string;
   password: string;
-  email?: string;
-  permission?: string;
-  status?: string;
-  added_at?: Date
+  email: string;
+  permission: string;
+  status: string;
+  added_at: Date | string;
+}
+
+export interface IUserList {
+  users: IUser[];
+  count: number;
 }
 
 export interface ITag {
-  name: string;
+  tag_id: number;
+  value: string;
 }

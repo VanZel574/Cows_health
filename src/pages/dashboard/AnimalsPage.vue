@@ -47,6 +47,8 @@ import {ITableHeader, IAnimal} from "src/utils/models";
 import {ref, shallowRef, watchEffect} from "vue";
 import {useBarn} from "stores/barns";
 import {useAnimals} from "stores/animals";
+import {date} from "quasar";
+const {formatDate} = date;
 
 
 const dialogComponents = {
@@ -58,8 +60,8 @@ const barnStore = useBarn()
 
 const headers: ITableHeader[] = [
   {
-    name:'id',
-    field:'id',
+    name:'cow_id',
+    field:'cow_id',
     label: 'id',
     align: 'left',
     headerStyle: 'font-weight: 600;',
@@ -74,49 +76,49 @@ const headers: ITableHeader[] = [
     sortable: true
   },
   {
-    name:'dateOfBorn',
-    field:'dateOfBorn',
+    name:'breed_id',
+    field:'breed_id',
+    label: 'id породы',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
+  {
+    name:'breed',
+    field:'breed',
+    label: 'Порода',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
+  {
+    name:'bolus_id',
+    field:'bolus_id',
+    label: 'id устройства',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
+  {
+    name:'bolus_sn',
+    field:'bolus_sn',
+    label: 'Серийный номер устройства',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
+  {
+    name:'date_of_born',
+    field:'date_of_born',
     label: 'Дата рождения',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
   },
   {
-    name:'lactationDay',
-    field:'lactationDay',
-    label: 'День лактации',
-    align: 'left',
-    headerStyle: 'font-weight: 600;',
-    sortable: true
-  },
-  {
-    name:'type',
-    field:'type',
-    label: 'Тип',
-    align: 'left',
-    headerStyle: 'font-weight: 600;',
-    sortable: true
-  },
-  {
-    name:'bolusID',
-    field:'bolusID',
-    label: 'Id болюса',
-    align: 'left',
-    headerStyle: 'font-weight: 600;',
-    sortable: true
-  },
-  {
-    name:'bolusNum',
-    field:'bolusNum',
-    label: 'Номер болюса',
-    align: 'left',
-    headerStyle: 'font-weight: 600;',
-    sortable: true
-  },
-  {
-    name:'calf',
-    field:'calf',
-    label: 'Нестельная',
+    name:'tags',
+    field:'tags',
+    label: 'Тэги',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
@@ -127,6 +129,14 @@ const headers: ITableHeader[] = [
     align: 'center',
     headerStyle: 'font-weight: 600;',
     field: 'actions',
+    sortable: true
+  },
+  {
+    name:'added_at',
+    field:'added_at',
+    label: 'Дата добавления',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
     sortable: true
   },
 ]
@@ -153,16 +163,24 @@ const addAnimalTag = () => {
   dialog.value = true
 }
 
-// load boluses on barn change
+// load devices on barn change
 watchEffect(() => {
   if (barnStore.activeBarn) {
     animalsStore.loadData().catch(e => console.log(e))
   }
 })
 
-// load boluses if store change
+// load devices if store change
 watchEffect(() => {
-  animals.value = animalsStore.animals
+  animals.value = animalsStore.animals.map(animal => {
+    const {added_at, date_of_born, ...rest} = animal
+
+    return {
+      ...rest,
+      added_at: formatDate(added_at, 'DD-MM-YYYY'),
+      date_of_born: formatDate(date_of_born, 'DD-MM-YYYY'),
+    }
+  })
 })
 
 </script>

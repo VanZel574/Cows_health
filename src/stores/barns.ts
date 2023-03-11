@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
-import { UseApi } from "boot/api";
-import { useFarm } from './farms'
-import { FetchMethod, IBarn, IBarnStore } from "src/utils/models";
-import { LocalStorage } from "quasar";
-import {Notify} from "quasar";
+import {defineStore} from 'pinia';
+import {UseApi} from "boot/api";
+import {useFarm} from './farms'
+import {IBarn, IBarnStore} from "src/utils/models";
+import {isBarnList} from "src/utils/guards";
+import {LocalStorage} from "quasar";
 
 
 export const useBarn = defineStore('barn', {
@@ -17,16 +17,16 @@ export const useBarn = defineStore('barn', {
     /*-----------------
     * load barn list
     *-----------------*/
-    async loadData () {
+    async loadData() {
       try {
         const farm = useFarm()
         const {activeFarm} = farm
         if (!activeFarm) return
 
-        const response = await UseApi.barns(null, FetchMethod.GET, activeFarm)
-        if (response) {
-          this.barnList = response
-        }
+        const response = await UseApi.get('farm/barn', {farm_id: activeFarm.farm_id})
+        isBarnList(response)
+
+        this.barnList = response[0].barns.barns
       } catch (e) {
         throw e
       }
@@ -35,7 +35,7 @@ export const useBarn = defineStore('barn', {
     /*-----------------
     * set barn to store
     *-----------------*/
-    setActiveBarn (barn: IBarn) {
+    setActiveBarn(barn: IBarn) {
       this.activeBarn = barn
       LocalStorage.set('barn', barn)
     },
@@ -43,12 +43,12 @@ export const useBarn = defineStore('barn', {
     /*------------------------------------
     * check localstorage barn in barn list
     *-----------------------------------*/
-    checkActiveBarnInBarnList () {
+    checkActiveBarnInBarnList() {
       const activeBarn: IBarn | null = LocalStorage.getItem('barn')
       if (!activeBarn) return
 
-      const {id} = activeBarn
-      const barnExist = this.barnList.find(item => item.id === id)
+      const {barn_id} = activeBarn
+      const barnExist = this.barnList.find(item => item.barn_id === barn_id)
       if (barnExist) {
         this.activeBarn = activeBarn
       } else {
@@ -60,21 +60,25 @@ export const useBarn = defineStore('barn', {
     /*---------------
     * add new barn
     *---------------*/
-    async addData (newBarn: IBarn) {
+    async addData(newBarn: IBarn) {
       try {
         // add
         const farm = useFarm()
         const {activeFarm} = farm
 
         if (!activeFarm) {
-          Notify.create({
+          this.Notify.create({
             type: 'negative',
             message: 'Ошибка! не выбрана ферма'
           })
           return
         }
 
-        await UseApi.barns(newBarn, FetchMethod.POST, activeFarm)
+        await UseApi.post('farm/barn', {barn_id: newBarn.barn_id}, {farm_id: activeFarm.farm_id})
+        this.Notify.create({
+          type: 'positive',
+          message: 'Коровник успешно добавлены'
+        })
 
         // get barn list
         await this.loadData()

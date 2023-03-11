@@ -3,25 +3,25 @@
     <div class="q-pa-md">
       <q-table
         :columns="headers"
-        :rows="boluses"
-        title="Болюсы"
+        :rows="devices"
+        title="Устройства"
         selection="multiple"
-        :selected="bolusesSelected"
+        :selected="devicesSelected"
       >
         <template v-slot:bottom>
           <q-btn
             class="q-ml-sm"
             color="negative"
-            :disable="bolusesSelected.length < 1"
+            :disable="devicesSelected.length < 1"
             label="Удалить"
             icon="delete"
-            @click="removeBoluses"
+            @click="removeDevices"
           />
         </template>
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn
-              v-for="action in bolusesActions"
+              v-for="action in devicesActions"
               round
               :color="action.color"
               :icon="action.icon"
@@ -43,32 +43,34 @@
 
 <script setup lang="ts">
 import Modal from "components/Modal.vue";
-import Statistic from "components/boluses/Statistic.vue";
-import {ITableHeader, IBolus, ITableAction} from "src/utils/models";
+import Statistic from "components/devices/Statistic.vue";
+import {ITableHeader, IDevice, ITableAction} from "src/utils/models";
 import {ref, shallowRef, watchEffect} from "vue";
-import {useBoluses} from "stores/boluses";
+import {useDevices} from "stores/devices";
 import {useBarn} from "stores/barns";
+import {date} from "quasar";
+const {formatDate} = date;
 
 
 const dialogComponents = {
   Statistic
 }
-const bolusesStore = useBoluses()
+const devicesStore = useDevices()
 const barnStore = useBarn()
 
 const headers: ITableHeader[] = [
   {
-    name: 'id',
-    field:'id',
+    name: 'device_id',
+    field:'device_id',
     label: 'id',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
   },
   {
-    name: 'number',
-    field:'number',
-    label: 'Номер',
+    name: 'sn',
+    field:'sn',
+    label: 'Серийный номер',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
@@ -82,41 +84,57 @@ const headers: ITableHeader[] = [
     sortable: true
   },
   {
-    name: 'cowName',
-    field:'cowName',
+    name: 'info',
+    field:'info',
+    label: 'Информация',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
+  {
+    name: 'cow_id',
+    field:'cow_id',
+    label: 'cow_id',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
+  {
+    name: 'cow_name',
+    field:'cow_name',
     label: 'Имя животного',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
   },
   {
-    name: 'cowID',
-    field:'cowID',
-    label: 'id животного',
-    align: 'left',
-    headerStyle: 'font-weight: 600;',
-    sortable: true
-  },
-  {
-    name: 'status',
-    field:'status',
-    label: 'Статус',
-    align: 'left',
-    headerStyle: 'font-weight: 600;',
-    sortable: true
-  },
-  {
-    name: 'chargeLevel',
-    field:'chargeLevel',
+    name: 'charge',
+    field:'charge',
     label: 'Уровень заряда',
     align: 'left',
     headerStyle: 'font-weight: 600;',
     sortable: true
   },
+  {
+    name: 'actions',
+    label: 'Действия',
+    align: 'center',
+    headerStyle: 'font-weight: 600;',
+    field: 'actions',
+    sortable: true
+  },
+  {
+    name:'added_at',
+    field:'added_at',
+    label: 'Дата добавления',
+    align: 'left',
+    headerStyle: 'font-weight: 600;',
+    sortable: true
+  },
 ]
-const boluses = ref<IBolus[]>([])
-const bolusesSelected = ref<IBolus[]>([])
-const bolusesActions: ITableAction[] = [
+const devices = ref<IDevice[]>([])
+const devicesSelected = ref<IDevice[]>([])
+const devicesActions: ITableAction[] = [
   {
     color: 'secondary',
     icon: 'info',
@@ -126,9 +144,9 @@ const bolusesActions: ITableAction[] = [
   }
 ]
 
-const removeBoluses = () => {
-  bolusesStore.deleteData(bolusesSelected.value).catch(e => console.log(e))
-  bolusesSelected.value = []
+const removeDevices = () => {
+  devicesStore.deleteData(devicesSelected.value).catch(e => console.log(e))
+  devicesSelected.value = []
 }
 
 // dialog
@@ -142,29 +160,36 @@ const showDialog = (action: ITableAction, rowProps: {id: number}) => {
   dialogTitle.value = action.title
   dialogComponent.value = action.component
   dialogComponentProps.value = {
-    bolusId: rowProps.id
+    id: rowProps.id
   }
   dialog.value = true
 }
 
-// load boluses on barn change
+// load devices on barn change
 watchEffect(() => {
   if (barnStore.activeBarn) {
-    bolusesStore.loadData().catch(e => console.log(e))
+    devicesStore.loadData().catch(e => console.log(e))
   }
 })
 
-// load boluses if store change
+// load devices if store change
 watchEffect(() => {
-  boluses.value = bolusesStore.boluses
+  devices.value = devicesStore.devices.map(device => {
+    const {added_at, ...rest} = device
+
+    return {
+      ...rest,
+      added_at: formatDate(added_at, 'DD-MM-YYYY'),
+    }
+  })
 })
 
 // onMounted(async () => {
 //   try {
-//     // load boluses
+//     // load devices
 //     await bolusesStore.loadData()
-//     // show boluses
-//     boluses.value = bolusesStore.boluses
+//     // show devices
+//     devices.value = bolusesStore.devices
 //   } catch (e) {
 //     console.log(e)
 //   }

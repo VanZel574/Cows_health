@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/auth/LoginPage.vue'),
         props: {routerLink: '/admin/dashboard', admin: true}
       },
-      { path: 'dashboard', component: () => import('pages/admin/AdminDashboard.vue') },
+      { path: 'dashboard', component: () => import('pages/admin/AdminDashboardPage.vue') },
     ]
   },
 

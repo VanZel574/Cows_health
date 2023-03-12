@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed} from "vue";
+import {ref, computed, watchEffect} from "vue";
 import {date} from "quasar";
 const {subtractFromDate, formatDate} = date
 import VChart from "vue-echarts";
@@ -60,6 +60,7 @@ import {
   DataZoomComponent,
   ToolboxComponent
 } from 'echarts/components'
+import {EChartsOption} from "echarts";
 
 use([
   CanvasRenderer,
@@ -112,7 +113,7 @@ const statisticTypeOptions = [
 ]
 
 // chart
-const statisticChartOption = ref({
+const statisticChartOption = ref<EChartsOption>({
   legend: {},
   dataZoom: {},
   xAxis: {
@@ -131,6 +132,20 @@ const statisticChartOption = ref({
     }
   ]
 })
+
+// load data
+watchEffect(async () => {
+  const {from, to} = dateRangeCalendar.value
+
+  const params = {
+    from,
+    to,
+    type: statisticType.value
+  }
+
+  console.log(params)
+})
+
 </script>
 
 <style scoped>

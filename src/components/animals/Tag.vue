@@ -17,8 +17,8 @@
     </q-card-section>
 
     <q-card-actions>
-      <q-btn flat @click="emit('dialogClose')">Отменить</q-btn>
       <q-btn flat color="primary" @click="addTag">Добавить тэги</q-btn>
+      <q-btn flat @click="emit('dialogClose')">Отменить</q-btn>
     </q-card-actions>
   </q-card>
 </template>
@@ -31,10 +31,10 @@ import {IAnimal} from "src/utils/models";
 interface IProps {
   componentProps: IAnimal[]
 }
-
 const props = withDefaults(defineProps<IProps>(), {
   componentProps: () => [],
 })
+
 const emit = defineEmits(['dialogClose'])
 
 const newTag = ref('')

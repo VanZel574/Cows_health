@@ -8,6 +8,10 @@
       </q-toolbar>
     </div>
 
+    <div class="q-pa-md">
+      <keys />
+    </div>
+
     <div class="row q-pa-md">
       <div class="col">
         <q-card>
@@ -38,7 +42,6 @@
 
         </q-card>
       </div>
-
     </div>
   </q-page>
 </template>
@@ -48,6 +51,7 @@
 import { ref } from "vue";
 import Users from "components/admin/Users.vue";
 import Farms from "components/admin/Farms.vue";
+import Keys from "components/admin/Keys.vue";
 
 
 const tab = ref('users')

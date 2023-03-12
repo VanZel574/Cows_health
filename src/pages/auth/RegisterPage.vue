@@ -83,6 +83,7 @@ import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useAuth } from "stores/auth";
 import { UseApi } from "boot/api";
+import {isPermissions} from "src/utils/guards";
 
 
 const $q = useQuasar()
@@ -101,7 +102,7 @@ const registerKey = ref('')
 const loading = ref(false)
 
 const permissionModel = ref()
-const permissionTypes = ref([])
+const permissionTypes = ref<string[]>([])
 
 
 // registerUser
@@ -158,7 +159,10 @@ const onSubmit = async () => {
 // get permission types
 onBeforeMount(async () => {
   try {
-    permissionTypes.value = await UseApi.getPermissionTypes()
+    const response = await UseApi.get('user/permissions')
+    isPermissions(response)
+
+    permissionTypes.value = response
   } catch (e) {
     console.log(e)
   }

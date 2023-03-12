@@ -140,3 +140,11 @@ export function isUserList(data: unknown): asserts data is IUserList {
     throw new Error('value is not user list interface')
   }
 }
+
+export function isPermissions(data: unknown): asserts data is string[] {
+  if (!!data && Array.isArray(data) && data.every(item => typeof item === 'string')) {
+
+  } else {
+    throw new Error('value is not permissions interface')
+  }
+}

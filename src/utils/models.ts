@@ -99,13 +99,14 @@ export interface IDevice {
 }
 
 export interface IUser {
-  id: number;
+  id?: number;
   login: string;
   password: string;
-  email: string;
-  permission: string;
-  status: string;
-  added_at: Date | string;
+  key?: string;
+  email?: string;
+  permission?: string;
+  status?: string;
+  added_at?: Date | string;
 }
 
 export interface IUserList {

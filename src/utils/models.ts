@@ -117,4 +117,5 @@ export interface IUserList {
 export interface ITag {
   tag_id: number;
   value: string;
+  selected?: boolean
 }

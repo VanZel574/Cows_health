@@ -7,8 +7,10 @@
         :title="farmsCount"
         flat
         selection="multiple"
+        row-key="farm_id"
+        v-model:selected="farmsSelected"
       >
-        <template v-slot:bottom>
+        <template v-slot:top-right>
           <q-btn
             class="q-ml-sm"
             color="negative"
@@ -18,7 +20,7 @@
             @click="removeFarms"
           />
         </template>
-        <template v-slot:body-cell-action="props">
+        <template v-slot:body-cell-actions="props">
           <q-td :props="props">
             <q-btn
               v-for="action in farmsActions"
@@ -26,6 +28,7 @@
               :color="action.color"
               :icon="action.icon"
               flat
+              size="1em"
               @click="checkFarm(props)"
             >
               <q-tooltip :offset="[10, 10]">{{action.tooltip}}</q-tooltip>
@@ -55,8 +58,8 @@ const $q = useQuasar()
 // фермы
 const farmsHeaders: ITableHeader[] = [
   {
-    name:'id',
-    field:'id',
+    name:'farm_id',
+    field:'farm_id',
     label: 'id',
     align: 'left',
     headerStyle: 'font-weight: 600;',
@@ -119,7 +122,7 @@ const loadFarms = async () => {
 
       return {
         ...rest,
-        added_at: formatDate(added_at, 'DD-MM-YYYY'),
+        added_at: formatDate(added_at, 'DD.MM.YYYY'),
         actions: null
       }
     })
@@ -169,86 +172,6 @@ const checkFarm = (rowProps: {row: IFarm}) => {
 onMounted( () => {
   loadFarms().catch(e => console.log(e))
 })
-
-// // коровники
-// const barnsHeaders: ITableHeader[] = [
-//   {
-//     name:'barn_id',
-//     field:'barn_id',
-//     label: 'id',
-//     align: 'left',
-//     headerStyle: 'font-weight: 600;',
-//     sortable: true
-//   },
-//   {
-//     name:'name',
-//     field:'name',
-//     label: 'Имя',
-//     align: 'left',
-//     headerStyle: 'font-weight: 600;',
-//     sortable: true
-//   },
-//   {
-//     name:'added_at',
-//     field:'added_at',
-//     label: 'Дата добавления',
-//     align: 'left',
-//     headerStyle: 'font-weight: 600;',
-//     sortable: true
-//   },
-// ]
-// const barnsRows = ref<IBarn[]>([])
-// const barnSelected = ref<IBarn[]>([])
-//
-// const loadBarns = async () => {
-//   try {
-//     if (farmChecked.value) {
-//       const response = await UseApi.get('farm/barn/', {farm_id: farmChecked.value.farm_id})
-//       isBarnList(response)
-//
-//       // set barns
-//       barnsRows.value = response[0].barns.barns.map(barn => {
-//         const {added_at, ...rest} = barn
-//
-//         return {
-//           ...rest,
-//           added_at: formatDate(added_at, 'DD-MM-YYYY')
-//         }
-//       })
-//     } else {
-//       barnsRows.value = []
-//     }
-//   } catch (e) {
-//     console.log(e)
-//   }
-// }
-// const removeBarns = async () => {
-//   try {
-//     // delete
-//     const barnsId: number[] = barnSelected.value.map(barn => barn.barn_id)
-//     await UseApi.delete('farm/barn/', {barn_id: barnsId})
-//
-//     // notify
-//     $q.notify({
-//       type: 'positive',
-//       message: 'Коровники успешно удалены'
-//     })
-//
-//     barnSelected.value = []
-//
-//     // load
-//     await loadBarns()
-//   } catch (e) {
-//     console.log(e)
-//   }
-// }
-
-// all
-
-
-// watch(farmChecked, () => {
-//   loadBarns().catch(e => console.log(e))
-// })
 
 </script>
 

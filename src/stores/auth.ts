@@ -27,7 +27,7 @@ export const useAuth = defineStore('auth', {
     *----------------------*/
     async login(user: IUser) {
       try {
-        await UseApi.post('user/login/', {login: user.login, password: user.password})
+        await UseApi.post('user/login', {login: user.login, password: user.password})
 
         this.authAction()
       } catch (e) {
@@ -41,7 +41,7 @@ export const useAuth = defineStore('auth', {
     async register(user: IUser) {
       try {
         const {login, password, key, email, permission} = user
-        await UseApi.post('user/register/', {login, password, key, email, permission})
+        await UseApi.post('user/register', {login, password, key, email, permission})
 
         this.authAction()
 
@@ -55,7 +55,7 @@ export const useAuth = defineStore('auth', {
     *----------------------*/
     async logout () {
       try {
-        await UseApi.post('user/logout/', {})
+        await UseApi.post('user/logout', {})
 
         // reset state
         this.$reset()

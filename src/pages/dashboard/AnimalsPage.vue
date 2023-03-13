@@ -5,9 +5,10 @@
         :columns="headers"
         :rows="animals"
         selection="multiple"
-        :selected="animalsSelected"
+        v-model:selected="animalsSelected"
+        row-key="cow_id"
       >
-        <template v-slot:bottom>
+        <template v-slot:top-right>
           <q-btn
             class="q-ml-sm"
             color="negative"
@@ -17,12 +18,13 @@
             @click="removeAnimals"
           />
         </template>
-        <template v-slot:top>
+        <template v-slot:top-left>
           <q-btn
             class="q-ml-sm"
             color="secondary"
             label="Добавить тэг"
             icon="add"
+            :disable="animalsSelected.length < 1"
             @click="addAnimalTag"
           />
         </template>
@@ -44,7 +46,7 @@
 import Modal from "components/Modal.vue";
 import Tag from "components/animals/Tag.vue";
 import {ITableHeader, IAnimal} from "src/utils/models";
-import {ref, shallowRef, watchEffect} from "vue";
+import {markRaw, ref, shallowRef, toRaw, watchEffect} from "vue";
 import {useBarn} from "stores/barns";
 import {useAnimals} from "stores/animals";
 import {date} from "quasar";
@@ -157,8 +159,10 @@ const dialogComponentProps = ref({})
 const addAnimalTag = () => {
   dialogTitle.value = 'Тэги'
   dialogComponent.value = dialogComponents['Tag']
+
+  const selectedAnimalsUnref = animalsSelected.value.map(animal => toRaw(animal))
   dialogComponentProps.value = {
-    animals: animalsSelected.value
+    animals: selectedAnimalsUnref
   }
   dialog.value = true
 }
@@ -177,8 +181,8 @@ watchEffect(() => {
 
     return {
       ...rest,
-      added_at: formatDate(added_at, 'DD-MM-YYYY'),
-      date_of_born: formatDate(date_of_born, 'DD-MM-YYYY'),
+      added_at: formatDate(added_at, 'DD.MM.YYYY'),
+      date_of_born: formatDate(date_of_born, 'DD.MM.YYYY'),
     }
   })
 })

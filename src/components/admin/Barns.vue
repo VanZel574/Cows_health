@@ -5,8 +5,10 @@
     title="Коровники"
     flat
     selection="multiple"
+    v-model:selected="barnSelected"
+    row-key="barn_id"
   >
-    <template v-slot:bottom>
+    <template v-slot:top-right>
       <q-btn
         class="q-ml-sm"
         color="negative"
@@ -22,7 +24,7 @@
 <script setup lang="ts">
 // коровники
 import {IBarn, IFarm, ITableHeader} from "src/utils/models";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {UseApi} from "boot/api";
 import {isBarnList} from "src/utils/guards";
 import {date, useQuasar} from "quasar";
@@ -78,13 +80,14 @@ const loadBarns = async () => {
 
         return {
           ...rest,
-          added_at: formatDate(added_at, 'DD-MM-YYYY')
+          added_at: formatDate(added_at, 'DD.MM.YYYY')
         }
       })
     } else {
       barnsRows.value = []
     }
   } catch (e) {
+    barnsRows.value = []
     console.log(e)
   }
 }
@@ -92,7 +95,7 @@ const removeBarns = async () => {
   try {
     // delete
     const barnsId: number[] = barnSelected.value.map(barn => barn.barn_id)
-    await UseApi.delete('farm/barn/', {barn_id: barnsId})
+    await UseApi.delete('farm/barn', {barn_id: barnsId})
 
     // notify
     $q.notify({
@@ -108,6 +111,12 @@ const removeBarns = async () => {
     console.log(e)
   }
 }
+
+
+watchEffect(() => {
+  loadBarns().catch(e => console.log(e))
+})
+
 </script>
 
 <style scoped>

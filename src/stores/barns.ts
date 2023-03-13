@@ -23,7 +23,7 @@ export const useBarn = defineStore('barn', {
         const {activeFarm} = farm
         if (!activeFarm) return
 
-        const response = await UseApi.get('farm/barn', {farm_id: activeFarm.farm_id})
+        const response = await UseApi.get('farm/barn/', {farm_id: activeFarm.farm_id})
         isBarnList(response)
 
         this.barnList = response[0].barns.barns
@@ -74,7 +74,7 @@ export const useBarn = defineStore('barn', {
           return
         }
 
-        await UseApi.post('farm/barn', {barn_id: newBarn.barn_id}, {farm_id: activeFarm.farm_id})
+        await UseApi.post('farm/barn/', {barn_id: newBarn.barn_id}, {farm_id: activeFarm.farm_id})
         this.Notify.create({
           type: 'positive',
           message: 'Коровник успешно добавлены'

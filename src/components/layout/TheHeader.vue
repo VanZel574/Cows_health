@@ -52,14 +52,14 @@
       <div class="col col-auto">
 <!--      Фермы-->
         <q-select
-          :options="farmList"
+          :options="farmStore.farmList"
           label="Выберите ферму"
           v-model="initFarmModel"
           outlined
           style="min-width: 250px; max-width: 300px"
           bg-color="blue-1"
           @update:model-value="farmChange"
-          option-value="id"
+          option-value="farm_id"
           option-label="name"
         >
           <template v-slot:append>
@@ -77,14 +77,14 @@
       <div class="col col-auto">
 <!--      Коровники-->
         <q-select
-          :options="barnList"
+          :options="barnStore.barnList"
           label="Выберите коровник"
           v-model="initBarnModel"
           outlined
           style="min-width: 250px; max-width: 300px"
           bg-color="blue-1"
           @update:model-value="barnChange"
-          option-value="id"
+          option-value="barn_id"
           option-label="name"
         >
           <template v-slot:append>
@@ -175,7 +175,6 @@ const newComponents = {
 
 // Фермы
 const farmStore = useFarm()
-const farmList = ref<IFarm[]>([])
 const initFarmModel = ref<IFarm | null>(null)
 const farmChange = (farm: IFarm) => {
   farmStore.activeFarm = farm
@@ -183,7 +182,6 @@ const farmChange = (farm: IFarm) => {
 
 // Коровники
 const barnStore = useBarn()
-const barnList = ref<IBarn[]>([])
 const initBarnModel = ref<IBarn | null>(null)
 const barnChange = (barn: IBarn) => {
   barnStore.activeBarn = barn

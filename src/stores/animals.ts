@@ -25,7 +25,7 @@ export const useAnimals = defineStore('animals', {
         const {activeBarn} = barn
 
         if (activeBarn) {
-          const response = await UseApi.get('cow', {barn_id: activeBarn.barn_id})
+          const response = await UseApi.get('cow/', {barn_id: activeBarn.barn_id})
           isAnimalList(response)
 
           this.animals = response[0].cows
@@ -48,7 +48,7 @@ export const useAnimals = defineStore('animals', {
 
         if(activeBarn) {
           // add animal
-          await UseApi.post('cow', {cow_id: newAnimal.cow_id}, {barn_id: activeBarn.barn_id})
+          await UseApi.post('cow/', {cow_id: newAnimal.cow_id}, {barn_id: activeBarn.barn_id})
           this.Notify.create({
             type: 'positive',
             message: 'Животные успешно добавлены'
@@ -87,7 +87,7 @@ export const useAnimals = defineStore('animals', {
         if (activeBarn) {
           const animalIdList: number[] = animals.map(animal => animal.cow_id)
           // delete
-          await UseApi.delete('cow', {cow_id: animalIdList})
+          await UseApi.delete('cow/', {cow_id: animalIdList})
           // notify
           this.Notify.create({
             type: 'positive',

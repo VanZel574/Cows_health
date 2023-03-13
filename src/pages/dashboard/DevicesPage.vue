@@ -6,9 +6,10 @@
         :rows="devices"
         title="Устройства"
         selection="multiple"
-        :selected="devicesSelected"
+        v-model:selected="devicesSelected"
+        row-key="device_id"
       >
-        <template v-slot:bottom>
+        <template v-slot:top-right>
           <q-btn
             class="q-ml-sm"
             color="negative"
@@ -18,7 +19,7 @@
             @click="removeDevices"
           />
         </template>
-        <template v-slot:body-cell-action="props">
+        <template v-slot:body-cell-actions="props">
           <q-td :props="props">
             <q-btn
               v-for="action in devicesActions"

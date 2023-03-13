@@ -8,7 +8,7 @@
         flat
         selection="multiple"
       >
-        <template v-slot:bottom>
+        <template v-slot:top-right>
           <q-btn
             class="q-ml-sm"
             color="negative"
